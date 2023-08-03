@@ -2,15 +2,15 @@
 Instructions for installing proxmox in hetzner with zfs.  
 Enter Rescue Mode:
 
-# 1.1. Log into the Hetzner Robot Web Interface.
+### 1.1. Log into the Hetzner Robot Web Interface.
 
-# 1.2. Select your server, go to the "Rescue" tab, select "Linux" as the operating system and click "Activate rescue system". You will receive an email with the rescue system's credentials.
+### 1.2. Select your server, go to the "Rescue" tab, select "Linux" as the operating system and click "Activate rescue system". You will receive an email with the rescue system's credentials.
 
-# 1.3. Restart the server to enter the rescue system.
+### 1.3. Restart the server to enter the rescue system.
 
 SSH into Rescue System:
 
-# 2.1. SSH into the server using the provided credentials in the email.
+### 2.1. SSH into the server using the provided credentials in the email.
 
 Setup the Partition Scheme for NVMe and Hard drives:
 
@@ -18,7 +18,7 @@ It's recommended to use the NVMe drives for the ZFS rpool (OS and VM images) and
 
 Follow these steps for the NVMe drives:
 
-# 3.1. Use fdisk to create a GPT partition table and a single Linux partition on each NVMe drive. For example, for the first NVMe drive:
+### 3.1. Use fdisk to create a GPT partition table and a single Linux partition on each NVMe drive. For example, for the first NVMe drive:
 use `lsblk` if you don't know your drives. 
 
 ```bash
@@ -26,7 +26,7 @@ fdisk /dev/nvme0n1
 ````
 Follow the prompts to create a new GPT table (g command) and a new partition (n command). Repeat the process for the second NVMe drive.
 
-## Create a ZFS mirrored pool using these partitions:
+#### Create a ZFS mirrored pool using these partitions:
 
 ```bash
 zpool create -f -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool mirror /dev/nvme0n1p1 /dev/nvme1n1p1
@@ -35,10 +35,10 @@ zpool create -f -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O 
 Do similar steps for the hard drives but the pool should be created without the -R /mnt and -O mountpoint=/ options.
 I like to do this to avoid boot errors 
 ```bash
-zpool create -f -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD rpool mirror /dev/sda /dev/sdb
+zpool create -f -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD data-pool mirror /dev/sda /dev/sdb
 ```
 
-## Install Proxmox:
+#### Install Proxmox:
 
 Download and install Proxmox onto the ZFS rpool:
 
